@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Patient Invoice Data Entry</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 200px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+button {
+  padding: 10px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>Patient Invoice Data Entry</h1>
+
+<form id="invoiceForm">
+  <label for="patientName">Patient Name:</label>
+  <input type="text" id="patientName" name="patientName" required><br><br>
+
+  <label for="patientNumber">Patient Number:</label>
+  <input type="text" id="patientNumber" name="patientNumber" required><br><br>
+
+  <label for="dateOfService">Date of Service:</label>
+  <input type="date" id="dateOfService" name="dateOfService" required><br><br>
+
+  <label for="serviceType">Service Type:</label>
+  <select id="serviceType" name="serviceType">
+    <option value="consultation">Consultation</option>
+    <option value="examination">Examination</option>
+    <option value="procedure">Procedure</option>
+    <option value="therapy">Therapy</option>
+    </select><br><br>
+
+  <label for="totalAmount">Total Amount Charged:</label>
+  <input type="number" id="totalAmount" name="totalAmount" step="0.01" required><br><br>
+
+  <label for="insuranceCovered">Amount Covered by Insurance:</label>
+  <input type="number" id="insuranceCovered" name="insuranceCovered" step="0.01" required><br><br>
+
+  <label for="amountInvoiced">Amount Invoiced to Patient:</label>
+  <input type="number" id="amountInvoiced" name="amountInvoiced" step="0.01" required><br><br>
+
+  <label for="invoiceDueDate">Invoice Due Date:</label>
+  <input type="date" id="invoiceDueDate" name="invoiceDueDate" required><br><br>
+
+  <button type="button" onclick="submitForm()">Submit</button>
+</form>
+
+<script>
+function submitForm() {
+  //  In a real application, you would send this data to your database.
+  //  This example uses a simulated submission and displays the data.
+
+  const formData = new FormData(document.getElementById('invoiceForm'));
+  const data = {};
+  formData.forEach((value, key) => data[key] = value);
+
+  // Here you would typically use fetch or XMLHttpRequest to send data to your server.
+  // Example using fetch (replace with your server endpoint):
+  /*
+  fetch('/your-server-endpoint', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    // Handle success (e.g., display a confirmation message)
+    alert("Invoice data submitted successfully!");
+    document.getElementById('invoiceForm').reset(); // Clear the form
+  })
+  .catch(error => {
+    // Handle errors
+    alert("Error submitting invoice data: " + error);
+  });
+  */
+
+  // Simulated submission (for demonstration purposes only):
+  console.log("Invoice Data Submitted:", data);
+  alert("Invoice data submitted (simulated). Check the console.");
+  document.getElementById('invoiceForm').reset(); // Clear the form
+}
+</script>
+
+</body>
+</html>
