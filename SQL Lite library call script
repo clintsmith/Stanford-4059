@@ -1,0 +1,81 @@
+use rusqlite::{Connection, Result};
+
+// Define a struct to represent your data (e.g., an account)
+#[derive(Debug)]
+struct Account {
+    id: i32,
+    name: String,
+    balance: f64,
+}
+
+fn main() -> Result<()> {
+    // 1. Open a connection to the SQLite database.  Make sure the path is correct.
+    //    If the database doesn't exist, this will create it.
+    let db_path = "accounting.db"; // Or wherever your DB is located.  Relative paths are from the project root.
+    let conn = Connection::open(db_path)?;
+
+    // 2. Create the table if it doesn't exist (good practice to ensure it's there).
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS accounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            balance REAL NOT NULL
+        )",
+        (), // Empty parameters
+    )?;
+
+    // 3. Insert some data (example)
+    let mut stmt = conn.prepare("INSERT INTO accounts (name, balance) VALUES (?, ?)")?;
+    stmt.execute(("Checking", 100.50))?;
+    stmt.execute(("Savings", 500.25))?;
+    stmt.execute(("Credit Card", -25.75))?;
+
+
+
+    // 4. Query the data and print it
+    let mut stmt = conn.prepare("SELECT id, name, balance FROM accounts")?;
+    let account_iter = stmt.query_map([], |row| {
+        Ok(Account {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            balance: row.get(2)?,
+        })
+    })?;
+
+    println!("Accounts:");
+    for account in account_iter {
+        println!("{:?}", account?);  // Use ? to handle potential errors from the iterator
+    }
+
+    // 5. Example of updating data:
+    let mut stmt = conn.prepare("UPDATE accounts SET balance = ? WHERE name = ?")?;
+    let rows_affected = stmt.execute((150.00, "Checking"))?;
+    println!("Updated {} row(s)", rows_affected);
+
+
+
+    // 6. Example of deleting data:
+    let mut stmt = conn.prepare("DELETE FROM accounts WHERE name = ?")?;
+    let rows_affected = stmt.execute(("Credit Card",))?; // Note the tuple even for a single parameter
+    println!("Deleted {} row(s)", rows_affected);
+
+
+    // Re-query and print after update/delete
+    let mut stmt = conn.prepare("SELECT id, name, balance FROM accounts")?;
+    let account_iter = stmt.query_map([], |row| {
+        Ok(Account {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            balance: row.get(2)?,
+        })
+    })?;
+
+    println!("\nAccounts (after update/delete):");
+    for account in account_iter {
+        println!("{:?}", account?);
+    }
+
+
+
+    Ok(()) // Indicate successful execution
+}
